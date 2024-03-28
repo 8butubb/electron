@@ -1,6 +1,6 @@
 {
-  "name": "my-electron-app",
-  "version": "1.0.0",
+  "name": "jkwj",
+  "version": "1.2.3",
   "description": "监控文件导入导出",
   "main": "main.js",
   "scripts": {
