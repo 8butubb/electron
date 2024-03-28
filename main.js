@@ -1,9 +1,12 @@
+// main.js
+
 const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const mysql = require('mysql');
 const fs = require('fs');
 const { autoUpdater } = require('electron-updater');
 
 autoUpdater.checkForUpdatesAndNotify();
+
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 let mainWindow;
 let connection;
@@ -55,6 +58,9 @@ function createWindow() {
   ipcMain.on('query-mysql', handleQueryMysql);
   ipcMain.on('query-mysql-only', handleQueryMysqlOnly);
   ipcMain.on('insert-data', handleInsertData);
+  ipcMain.on('check-for-updates', () => {
+    autoUpdater.checkForUpdates();
+  });
 }
 
 // 处理查询数据请求（导出）

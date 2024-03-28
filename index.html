@@ -149,12 +149,24 @@ body {
 
 <!-- 右下角按钮 -->
 <div class="button-container">
-  <a href="https://www.baidu.com" target="_blank" class="button">获得新版本吧</a>
+    <button class="button" onclick="checkForUpdates()">检查更新</button>
   <a href="https://github.com/8butubb/electron" target="_blank" id="second-link">github</a>
 </div>
 
 <script>
+  function checkForUpdates() {
+  const { ipcRenderer } = require('electron');
+  ipcRenderer.send('check-for-updates');
+}
+
 const { ipcRenderer } = require('electron');
+ipcRenderer.on('update-available', () => {
+  alert('发现新版本，请稍后自动更新。');
+});
+
+ipcRenderer.on('update-not-available', () => {
+  alert('当前已是最新版本。');
+});
 
 let inputCounter = 1;
 

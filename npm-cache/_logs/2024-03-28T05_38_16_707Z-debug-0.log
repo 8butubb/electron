@@ -1,0 +1,37 @@
+0 verbose cli C:\Program Files\nodejs\node.exe C:\Users\admini\AppData\Roaming\npm\node_modules\npm\bin\npm-cli.js
+1 info using npm@10.5.0
+2 info using node@v20.11.1
+3 timing npm:load:whichnode Completed in 2ms
+4 timing config:load:defaults Completed in 2ms
+5 timing config:load:file:C:\Users\admini\AppData\Roaming\npm\node_modules\npm\npmrc Completed in 2ms
+6 timing config:load:builtin Completed in 2ms
+7 timing config:load:cli Completed in 1ms
+8 timing config:load:env Completed in 0ms
+9 timing config:load:file:C:\Users\admini\Desktop\my-electron-app\.npmrc Completed in 0ms
+10 timing config:load:project Completed in 0ms
+11 timing config:load:file:C:\Users\admini\.npmrc Completed in 1ms
+12 timing config:load:user Completed in 2ms
+13 timing config:load:file:C:\Program Files\nodejs\etc\npmrc Completed in 0ms
+14 timing config:load:global Completed in 0ms
+15 timing config:load:setEnvs Completed in 0ms
+16 timing config:load Completed in 8ms
+17 timing npm:load:configload Completed in 8ms
+18 timing config:load:flatten Completed in 1ms
+19 timing npm:load:mkdirpcache Completed in 0ms
+20 timing npm:load:mkdirplogs Completed in 0ms
+21 verbose title npm start
+22 verbose argv "start"
+23 timing npm:load:setTitle Completed in 1ms
+24 timing npm:load:display Completed in 0ms
+25 verbose logfile logs-max:10 dir:C:\Users\admini\Desktop\my-electron-app\npm-cache\_logs\2024-03-28T05_38_16_707Z-
+26 verbose logfile C:\Users\admini\Desktop\my-electron-app\npm-cache\_logs\2024-03-28T05_38_16_707Z-debug-0.log
+27 timing npm:load:logFile Completed in 6ms
+28 timing npm:load:timers Completed in 0ms
+29 timing npm:load:configScope Completed in 0ms
+30 timing npm:load Completed in 37ms
+31 silly logfile done cleaning log files
+32 timing command:run-script Completed in 5155ms
+33 timing command:start Completed in 5164ms
+34 verbose exit 0
+35 timing npm Completed in 5232ms
+36 info ok
