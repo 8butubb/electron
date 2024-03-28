@@ -22,7 +22,7 @@
     "bignumber.js": "^9.1.2",
     "event-target-shim": "^6.0.2",
     "fs": "^0.0.1-security",
-    "mysql": "^2.18.1",
+    "mysql": "latest",
     "process": "^0.11.10",
     "readable-stream": "^4.5.2",
     "safe-buffer": "^5.2.1",
