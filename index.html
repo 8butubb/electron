@@ -5,7 +5,7 @@
 <title>监控查询</title>
 <style>
 html {
-  background-image: url('http://106.54.244.161:8090/i/2024/03/28/6604bc07bf495.png');
+  background-image: url('http://106.54.244.161:8090/i/2024/03/28/6604f7ba92527.jpg');
   background-size: cover;
   background-position: center; 
   background-repeat: no-repeat;
@@ -100,6 +100,19 @@ body {
 #second-link:hover {
   background-color: #0056b3;
 }
+
+.delete-button {
+  padding: 5px 10px;
+  background-color: #ff5555;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.delete-button:hover {
+  background-color: #ff0000;
+}
 </style>
 </head>
 <body>
@@ -107,8 +120,11 @@ body {
 
 <form id="query-form">
   <div id="input-container">
-    <label for="门店1">门店1:</label>
-    <input type="text" id="门店1" name="门店1"><br>
+    <div class="input-row">
+      <label for="门店1">门店1:</label>
+      <input type="text" id="门店1" name="门店1">
+      <button type="button" class="delete-button" onclick="deleteInput('门店1')">删除</button>
+    </div>
   </div>
 
   <button type="button" onclick="addInput()">增加门店</button>
@@ -120,133 +136,148 @@ body {
 
 <div id="results"></div>
 
-<h2>导入监控数据</h2>
+<h2>新增监控数据</h2>
 
 <form id="insert-form">
-  <label for="newData">新数据:</label>
+  <label for="newData">数据:</label>
   <input type="text" id="newData" name="newData">
-  <button type="button" onclick="insertData()">插入</button>
+  <button type="button" onclick="insertData()">新增</button>
 </form>
-
-<!-- 数据库连接信息输入对话框 -->
-<div id="inputDialog">
-  <label for="host">主机地址:</label>
-  <input type="text" id="host" placeholder="输入主机地址"><br>
-  <label for="user">用户名:</label>
-  <input type="text" id="user" placeholder="输入用户名"><br>
-  <label for="password">密码:</label>
-  <input type="password" id="password" placeholder="输入密码"><br>
-  <label for="database">数据库名:</label>
-  <input type="text" id="database" placeholder="输入数据库名"><br>
-  <button type="button" onclick="changeDbConnection()">确定</button>
-</div>
+<!-- 文件上传 -->
+<h3>导入门店名</h3>
+<input type="file" id="fileInput" onchange="handleFileChange(event)">
 
 <!-- 右下角按钮 -->
 <div class="button-container">
   <a href="https://www.baidu.com" target="_blank" class="button">获得新版本吧</a>
   <a href="https://github.com/8butubb/electron" target="_blank" id="second-link">github</a>
 </div>
-  <script>
-    const { ipcRenderer } = require('electron');
 
-    let inputCounter = 1;
+<script>
+const { ipcRenderer } = require('electron');
 
-    function addInput() {
-      const inputContainer = document.getElementById('input-container');
-      const newInput = document.createElement('div');
+let inputCounter = 1;
+
+function addInput() {
+  const inputContainer = document.getElementById('input-container');
+  const newInput = document.createElement('div');
+  inputCounter++;
+  newInput.classList.add('input-row');
+  newInput.innerHTML = `<label for="门店${inputCounter}">门店 ${inputCounter}:</label>
+                        <input type="text" id="门店${inputCounter}" name="门店${inputCounter}">
+                        <button type="button" class="delete-button" onclick="deleteInput('门店${inputCounter}')">删除</button>`;
+  inputContainer.appendChild(newInput);
+}
+
+function removeInput() {
+  if (inputCounter > 1) {
+    const inputContainer = document.getElementById('input-container');
+    inputContainer.removeChild(inputContainer.lastChild);
+    inputCounter--;
+  }
+}
+
+function deleteInput(inputId) {
+  const inputElement = document.getElementById(inputId);
+  if (inputElement) {
+    inputElement.parentElement.remove();
+    inputCounter--;
+  }
+  ensureAtLeastOneInput();
+}
+
+function ensureAtLeastOneInput() {
+  const inputContainer = document.getElementById('input-container');
+  const inputRows = inputContainer.querySelectorAll('.input-row');
+  if (inputRows.length === 0) {
+    addInput();
+  }
+}
+
+function handleFileChange(event) {
+  const file = event.target.files[0];
+  const reader = new FileReader();
+
+  reader.onload = function (e) {
+    const fileContent = e.target.result;
+    const lines = fileContent.split('\n');
+    inputCounter = 0; // 重置计数器
+    const inputContainer = document.getElementById('input-container');
+    inputContainer.innerHTML = ''; // 清空输入框容器
+
+    lines.forEach(line => {
       inputCounter++;
+      const newInput = document.createElement('div');
+      newInput.classList.add('input-row');
       newInput.innerHTML = `<label for="门店${inputCounter}">门店 ${inputCounter}:</label>
-                            <input type="text" id="门店${inputCounter}" name="门店${inputCounter}"><br>`;
+                            <input type="text" id="门店${inputCounter}" name="门店${inputCounter}" value="${line.trim()}">
+                            <button type="button" class="delete-button" onclick="deleteInput('门店${inputCounter}')">删除</button>`;
       inputContainer.appendChild(newInput);
-    }
+    });
+  };
 
-    function removeInput() {
-      if (inputCounter > 1) {
-        const inputContainer = document.getElementById('input-container');
-        inputContainer.removeChild(inputContainer.lastChild);
-        inputCounter--;
+  reader.readAsText(file, 'UTF-8');
+}
+
+function executeQuery() {
+  const inputs = document.querySelectorAll('input[name^="门店"]');
+  const queries = Array.from(inputs).map(input => {
+    const name = input.value.trim();
+    return `SELECT boby FROM jkwj WHERE ExtractValue(boby, '/Device/@name') like '%${name}%'`;
+  });
+
+  ipcRenderer.send('query-mysql', { queries });
+}
+
+function executeQueryOnly() {
+  const inputs = document.querySelectorAll('input[name^="门店"]');
+  const queries = Array.from(inputs).map(input => {
+    const name = input.value.trim();
+    return `SELECT boby FROM jkwj WHERE ExtractValue(boby, '/Device/@name') like '%${name}%'`;
+  });
+
+  ipcRenderer.send('query-mysql-only', { queries });
+}
+
+function insertData() {
+  const newData = document.getElementById('newData').value.trim();
+  ipcRenderer.send('insert-data', { data: newData });
+}
+
+function clearResults() {
+  document.getElementById('results').innerHTML = '';
+}
+
+ipcRenderer.on('query-results', (event, results) => {
+  const resultsDiv = document.getElementById('results');
+  resultsDiv.innerHTML = '';
+
+  results.forEach((queryResult, index) => {
+    const resultDiv = document.createElement('div');
+    resultDiv.innerText = `Result ${index + 1}:`;
+
+    queryResult.results.forEach(result => {
+      const deviceMatch = result.boby.match(/<Device.*?\/>/);
+      if (deviceMatch) {
+        const deviceInfo = document.createElement('p');
+        deviceInfo.innerText = deviceMatch[0];
+        resultDiv.appendChild(deviceInfo);
       }
-    }
-
-    function executeQuery() {
-      const inputs = document.querySelectorAll('input[name^="门店"]');
-      const queries = Array.from(inputs).map(input => {
-        const name = input.value.trim();
-        return `SELECT boby FROM jkwj WHERE ExtractValue(boby, '/Device/@name') like '%${name}%'`;
-      });
-
-      ipcRenderer.send('query-mysql', { queries });
-    }
-
-    function executeQueryOnly() {
-      const inputs = document.querySelectorAll('input[name^="门店"]');
-      const queries = Array.from(inputs).map(input => {
-        const name = input.value.trim();
-        return `SELECT boby FROM jkwj WHERE ExtractValue(boby, '/Device/@name') like '%${name}%'`;
-      });
-
-      ipcRenderer.send('query-mysql-only', { queries });
-    }
-
-    function insertData() {
-      const newData = document.getElementById('newData').value.trim();
-      ipcRenderer.send('insert-data', { data: newData });
-    }
-
-    function clearResults() {
-      document.getElementById('results').innerHTML = '';
-    }
-
-    function openDbConnectionDialog() {
-      document.getElementById('inputDialog').style.display = 'block';
-    }
-
-    function changeDbConnection() {
-      const host = document.getElementById('host').value.trim();
-      const user = document.getElementById('user').value.trim();
-      const password = document.getElementById('password').value.trim();
-      const database = document.getElementById('database').value.trim();
-
-      ipcRenderer.send('change-db-connection', { host, user, password, database });
-      document.getElementById('inputDialog').style.display = 'none';
-    }
-
-    ipcRenderer.on('query-results', (event, results) => {
-      const resultsDiv = document.getElementById('results');
-      resultsDiv.innerHTML = '';
-
-      results.forEach((queryResult, index) => {
-        const resultDiv = document.createElement('div');
-        resultDiv.innerText = `Result ${index + 1}:`;
-
-        queryResult.results.forEach(result => {
-          const deviceMatch = result.boby.match(/<Device.*?\/>/);
-          if (deviceMatch) {
-            const deviceInfo = document.createElement('p');
-            deviceInfo.innerText = deviceMatch[0];
-            resultDiv.appendChild(deviceInfo);
-          }
-        });
-
-        resultsDiv.appendChild(resultDiv);
-      });
     });
 
-    ipcRenderer.on('query-error', (event, error) => {
-      document.getElementById('results').innerText = `Error: ${error}`;
-    });
+    resultsDiv.appendChild(resultDiv);
+  });
+});
 
-    ipcRenderer.on('insert-result', (event, result) => {
-      const insertResultDiv = document.getElementById('insert-result');
-      insertResultDiv.innerText = result;
-    });
+ipcRenderer.on('query-error', (event, error) => {
+  document.getElementById('results').innerText = `Error: ${error}`;
+});
 
-    ipcRenderer.on('db-connection-changed', (event, message) => {
-      console.log(message);
-      // 可以在这里更新界面提示用户数据库连接已切换
-    });
-  </script>
+ipcRenderer.on('insert-result', (event, result) => {
+  const insertResultDiv = document.getElementById('insert-result');
+  insertResultDiv.innerText = result;
+});
+
+</script>
 </body>
 </html>
-
-
