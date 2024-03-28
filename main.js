@@ -53,7 +53,6 @@ function createWindow() {
   ipcMain.on('query-mysql', handleQueryMysql);
   ipcMain.on('query-mysql-only', handleQueryMysqlOnly);
   ipcMain.on('insert-data', handleInsertData);
-  ipcMain.on('change-db-connection', handleChangeDbConnection);
 }
 
 // 处理查询数据请求（导出）
@@ -61,17 +60,21 @@ function handleQueryMysql(event, { queries }) {
   const queryResults = [];
 
   queries.forEach((query, index) => {
-    connection.query(query, (err, results) => {
-      if (err) {
-        event.sender.send('query-error', err.message);
-      } else {
-        queryResults.push({ index, results });
-        if (queryResults.length === queries.length) {
-          event.sender.send('query-results', queryResults);
-          saveDeviceDataToXmlFile(queryResults);
+    if (query.startsWith('SELECT')) {
+      connection.query(query, (err, results) => {
+        if (err) {
+          event.sender.send('query-error', err.message);
+        } else {
+          queryResults.push({ index, results });
+          if (queryResults.length === queries.length) {
+            event.sender.send('query-results', queryResults);
+            saveDeviceDataToXmlFile(queryResults);
+          }
         }
-      }
-    });
+      });
+    } else {
+      event.sender.send('query-error', 'Unsupported query format');
+    }
   });
 }
 
@@ -80,16 +83,20 @@ function handleQueryMysqlOnly(event, { queries }) {
   const queryResults = [];
 
   queries.forEach((query, index) => {
-    connection.query(query, (err, results) => {
-      if (err) {
-        event.sender.send('query-error', err.message);
-      } else {
-        queryResults.push({ index, results });
-        if (queryResults.length === queries.length) {
-          event.sender.send('query-results', queryResults);
+    if (query.startsWith('SELECT')) {
+      connection.query(query, (err, results) => {
+        if (err) {
+          event.sender.send('query-error', err.message);
+        } else {
+          queryResults.push({ index, results });
+          if (queryResults.length === queries.length) {
+            event.sender.send('query-results', queryResults);
+          }
         }
-      }
-    });
+      });
+    } else {
+      event.sender.send('query-error', 'Unsupported query format');
+    }
   });
 }
 
@@ -100,60 +107,6 @@ function handleInsertData(event, { data }) {
       event.sender.send('insert-result', 'Error inserting data: ' + err.message);
     } else {
       event.sender.send('insert-result', 'Data inserted successfully.');
-    }
-  });
-}
-
-// 处理切换数据库连接请求
-function handleChangeDbConnection(event) {
-  connection.end(); // 关闭当前连接
-
-  // 创建自定义输入框
-  const inputOptions = {
-    type: 'info',
-    buttons: ['确定', '取消'],
-    title: '输入新的数据库连接信息',
-    message: '请输入新的数据库连接信息:',
-    inputs: [
-      {
-        label: '主机地址:',
-        type: 'text',
-        placeholder: '输入主机地址',
-        value: 'localhost' // 默认值
-      },
-      {
-        label: '用户名:',
-        type: 'text',
-        placeholder: '输入用户名',
-        value: 'root' // 默认值
-      },
-      {
-        label: '密码:',
-        type: 'password',
-        placeholder: '输入密码',
-        value: '' // 默认为空
-      },
-      {
-        label: '数据库名:',
-        type: 'text',
-        placeholder: '输入数据库名',
-        value: 'my_database' // 默认值
-      }
-    ]
-  };
-
-  // 显示自定义输入框
-  dialog.showMessageBox(inputOptions).then((result) => {
-    if (result.response === 0) {
-      const newConnectionInfo = {
-        host: inputOptions.inputs[0].value,
-        user: inputOptions.inputs[1].value,
-        password: inputOptions.inputs[2].value,
-        database: inputOptions.inputs[3].value
-      };
-      // 创建新的连接
-      createConnection(newConnectionInfo.host, newConnectionInfo.user, newConnectionInfo.password, newConnectionInfo.database);
-      event.sender.send('db-connection-changed', 'Database connection updated successfully.');
     }
   });
 }
