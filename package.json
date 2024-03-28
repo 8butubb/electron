@@ -37,6 +37,7 @@
     "owner": "8butubb",
     "repo": "electron"
   },
+
     "electronDownload": {
       "cache": ".\\npm-cache"
     }
