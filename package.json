@@ -30,14 +30,6 @@
     "sqlstring": "^2.3.3"
   },
   "build": {
-    "appId": "1000",
-  "productName": "监控文件导入导出",
-  "publish": {
-    "provider": "github",
-    "owner": "8butubb",
-    "repo": "electron"
-  },
-
     "electronDownload": {
       "cache": ".\\npm-cache"
     }
