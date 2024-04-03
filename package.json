@@ -1,6 +1,6 @@
 {
   "name": "jkwj",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "监控文件导入导出",
   "main": "main.js",
   "scripts": {

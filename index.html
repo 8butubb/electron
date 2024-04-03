@@ -160,7 +160,7 @@ body {
 
 </form>
 <!-- 文件上传 -->
-<h1>导入门店名</h1>
+<h1>导入门店名(导入后会自动带入查询框，点击查询或导出)</h1>
 <input type="file" id="fileInput" onchange="handleFileChange(event)">
 
 <!-- 右下角按钮 -->
@@ -171,7 +171,7 @@ body {
 </div>
 
 
-<h1>监控数据生成</h1>
+<h1>监控数据生成(生成后会自动带入数据框需点击插入)</h1>
 
 <label for="deviceName">店名:</label>
 <input type="text" id="deviceName"><br><br>
@@ -206,6 +206,7 @@ body {
   
   // 将 XML 字符串显示在页面上
   document.getElementById('xmlOutput').innerText = xmlString;
+  document.getElementById('newData').value = xmlString;
 }
  function openJkwjPage() {
   // 发送消息给主进程以打开新窗口

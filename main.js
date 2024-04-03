@@ -42,8 +42,8 @@ function createConnection(host, user, password, database) {
 // 创建主窗口
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1000,
+    height: 1200,
     webPreferences: {
       nodeIntegration: true
     }
@@ -111,9 +111,9 @@ function handleQueryMysqlOnly(event, { queries }) {
 function handleInsertData(event, { data }) {
   connection.query('INSERT INTO jkwj (boby) VALUES (?)', [data], (err, result) => {
     if (err) {
-      event.sender.send('insert-result', 'Error inserting data: ' + err.message);
+      event.sender.send('insert-result', '插入失败: ' + err.message);
     } else {
-      event.sender.send('insert-result', 'Data inserted successfully.');
+      event.sender.send('insert-result', '监控数据插入成功.');
     }
   });
 }
