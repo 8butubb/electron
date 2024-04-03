@@ -8,43 +8,6 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 let mainWindow;
 let connection;
 
-ipcMain.on('open-jkwj-page', (event) => {
-  const jkwjWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
-      nodeIntegration: true
-    }
-  });
-
-  jkwjWindow.loadURL(
-    url.format({
-      pathname: 'jkwj.html',
-      protocol: 'file:',
-      slashes: true
-    })
-  );
-
-  jkwjWindow.on('closed', () => {
-    // 在窗口关闭时保存数据或执行其他操作
-    console.log('jkwjWindow closed');
-    // 可以在这里保存数据或执行其他操作
-  });
-});
-
-
-function openJkwjPage() {
-  const jkwjWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
-      nodeIntegration: true
-    }
-  });
-
-  jkwjWindow.loadFile('jkwj.html');
-}
-
 
 
 // 创建 MySQL 连接
@@ -93,8 +56,11 @@ function createWindow() {
   // 注册 IPC 事件监听器
   ipcMain.on('query-mysql', handleQueryMysql);
   ipcMain.on('query-mysql-only', handleQueryMysqlOnly);
-  ipcMain.on('insert-data', handleInsertData);
+  ipcMain.on('insert-data', handleInsertData); // 注册插入数据请求的监听器
 }
+
+  
+
 
 // 处理查询数据请求（导出）
 function handleQueryMysql(event, { queries }) {

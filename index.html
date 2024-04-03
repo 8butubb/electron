@@ -73,6 +73,11 @@ body {
   left: 50%; /* 水平居中 */
   transform: translateX(-50%); /* 水平居中 */
 }
+.button-container2 {
+  position: absolute; /* 使用绝对定位 */
+  top: calc(100px + 20px); /* 100px 是 <h1> 元素的高度，加上 20px 的间距 */
+  left: 20px; /* 左对齐 */
+}
 .button {
   display: block;
   padding: 10px 20px;
@@ -122,6 +127,10 @@ body {
 </head>
 <body>
 <h1>监控查询</h1>
+<div id="button-container2">
+  <button type="button" onclick="addInput()">增加门店</button>
+  <button type="button" onclick="removeInput()">减少门店</button>
+</div>
 
 <form id="query-form">
   <div id="input-container">
@@ -132,8 +141,7 @@ body {
     </div>
   </div>
 
-  <button type="button" onclick="addInput()">增加门店</button>
-  <button type="button" onclick="removeInput()">减少门店</button>
+ 
   <button type="button" onclick="executeQuery()">导出</button>
   <button type="button" onclick="executeQueryOnly()">查询</button>
   <button type="button" onclick="clearResults()">清除结果</button>
@@ -141,32 +149,64 @@ body {
 
 <div id="results"></div>
 
-<h2>新增监控数据</h2>
+<h1>数据库插入监控数据</h1>
 
 <form id="insert-form">
-  <label for="newData">数据:</label>
+  <label for="newData">数据(需要以< Device name=开头):</label>
   <input type="text" id="newData" name="newData">
-  <button type="button" onclick="insertData()">新增</button>
+  <button type="button" onclick="insertData()">插入</button>
+  <div id="insert-result"></div>
+<div id="insert-error"></div>
+
 </form>
 <!-- 文件上传 -->
-<h3>导入门店名</h3>
+<h1>导入门店名</h1>
 <input type="file" id="fileInput" onchange="handleFileChange(event)">
 
 <!-- 右下角按钮 -->
 <div class="button-container">
   <a href="https://www.baidu.com" target="_blank" class="button">获得新版本吧</a>
   <a href="https://github.com/8butubb/electron" target="_blank" id="second-link">github</a>
-  
-
-</div>
-<div class="button-container1">
-  <a href="#" onclick="openJkwjPage()" class="button">监控文件制作</a>
+  <button onclick="refreshBackground()">刷新背景图片</button>
 </div>
 
+
+<h1>监控数据生成</h1>
+
+<label for="deviceName">店名:</label>
+<input type="text" id="deviceName"><br><br>
+
+<label for="domain">sn码:</label>
+<input type="text" id="domain"><br><br>
+
+<button onclick="generateXML()">生成</button><br><br>
+
+<pre id="xmlOutput"></pre>
 
 
 
 <script>
+  function refreshBackground() {
+      // 获取 html 元素
+      const htmlElement = document.querySelector('html');
+      
+      // 生成随机数作为时间戳，以避免浏览器缓存
+      const timestamp = new Date().getTime();
+
+      // 更新背景图片的 URL
+      htmlElement.style.backgroundImage = `url('https://imgapi.xl0408.top/index.php?t=${timestamp}')`;
+    }
+  function generateXML() {
+  // 获取输入框的值
+  var deviceName = document.getElementById('deviceName').value;
+  var domain = document.getElementById('domain').value;
+  
+  // 构建 XML 字符串
+  var xmlString = '<Device name="' + deviceName + '" domain="' + domain + '" port="37777" username="admin" password="KS9h65kYDoGFW/e+8RL5Qt9VqZLKhocRdZ7GrcwjQHxbt8IzfLrsoGOqtbMp" protocol="1" connect="19" />';
+  
+  // 将 XML 字符串显示在页面上
+  document.getElementById('xmlOutput').innerText = xmlString;
+}
  function openJkwjPage() {
   // 发送消息给主进程以打开新窗口
   require('electron').ipcRenderer.send('open-jkwj-page');
@@ -260,6 +300,11 @@ function insertData() {
   const newData = document.getElementById('newData').value.trim();
   ipcRenderer.send('insert-data', { data: newData });
 }
+
+ipcRenderer.on('insert-result', (event, result) => {
+  const insertResultDiv = document.getElementById('insert-result');
+  insertResultDiv.innerText = result;
+});
 
 function clearResults() {
   document.getElementById('results').innerHTML = '';
