@@ -1,6 +1,6 @@
 {
   "name": "jkwj",
-  "version": "1.2.3",
+  "version": "2.0.1",
   "description": "监控文件导入导出",
   "main": "main.js",
   "scripts": {
@@ -27,7 +27,8 @@
     "process": "^0.11.10",
     "readable-stream": "^4.5.2",
     "safe-buffer": "^5.2.1",
-    "sqlstring": "^2.3.3"
+    "sqlstring": "^2.3.3",
+    "url": "^0.11.3"
   },
   "build": {
     "electronDownload": {

@@ -5,7 +5,7 @@
 <title>监控查询</title>
 <style>
 html {
-  background-image: url('http://106.54.244.161:8090/i/2024/03/28/6604f7ba92527.jpg');
+  background-image: url('https://imgapi.xl0408.top/index.php');
   background-size: cover;
   background-position: center; 
   background-repeat: no-repeat;
@@ -67,7 +67,12 @@ body {
   bottom: 20px;
   right: 20px;
 }
-
+.button-container1 {
+  position: absolute; /* 使用绝对定位 */
+  bottom: 20px;
+  left: 50%; /* 水平居中 */
+  transform: translateX(-50%); /* 水平居中 */
+}
 .button {
   display: block;
   padding: 10px 20px;
@@ -151,9 +156,21 @@ body {
 <div class="button-container">
   <a href="https://www.baidu.com" target="_blank" class="button">获得新版本吧</a>
   <a href="https://github.com/8butubb/electron" target="_blank" id="second-link">github</a>
+  
+
+</div>
+<div class="button-container1">
+  <a href="#" onclick="openJkwjPage()" class="button">监控文件制作</a>
 </div>
 
+
+
+
 <script>
+ function openJkwjPage() {
+  // 发送消息给主进程以打开新窗口
+  require('electron').ipcRenderer.send('open-jkwj-page');
+}
 const { ipcRenderer } = require('electron');
 
 let inputCounter = 1;
