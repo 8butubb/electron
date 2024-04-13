@@ -281,7 +281,7 @@ function executeQuery() {
   const inputs = document.querySelectorAll('input[name^="门店"]');
   const queries = Array.from(inputs).map(input => {
     const name = input.value.trim();
-    return `SELECT boby FROM jkwj WHERE ExtractValue(boby, '/Device/@name') like '%${name}%'`;
+    return `SELECT DISTINCT boby FROM jkwj WHERE ExtractValue(boby, '/Device/@name') like '%${name}%'`;
   });
 
   ipcRenderer.send('query-mysql', { queries });
@@ -291,7 +291,7 @@ function executeQueryOnly() {
   const inputs = document.querySelectorAll('input[name^="门店"]');
   const queries = Array.from(inputs).map(input => {
     const name = input.value.trim();
-    return `SELECT boby FROM jkwj WHERE ExtractValue(boby, '/Device/@name') like '%${name}%'`;
+    return `SELECT DISTINCT boby FROM jkwj WHERE ExtractValue(boby, '/Device/@name') like '%${name}%'`;
   });
 
   ipcRenderer.send('query-mysql-only', { queries });
